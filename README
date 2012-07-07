@@ -1,0 +1,7 @@
+I have decieded to separate saloon-core and saloon-site so that one could easily add 
+saloon-core as a rebar dependancy and then either build /site from scratch, or use
+saloon-site repository for a reference example of /site skeleton.
+Note that saloon_conf must be named that way and placed into /site/src/ and for rebar
+to compile things properly you have to have a site.app.src in the same directory.
+Please note that saloon is still pre-alpha, so stay away if you want to use it.
+Though any comments about general architecture and features are welcome ;)
