@@ -13,7 +13,7 @@
 prepare(Req) ->
 	?debugFmt("~n~n~n~n=~p REQUEST===~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", [X || {X, _} <- [cowboy_http_req:method(Req), cowboy_http_req:raw_path(Req), cowboy_http_req:peer(Req), cowboy_http_req:body_qs(Req)]]),
 	case init:get_argument(devmode) of
-		{ok, _DevMode} -> 
+		{ok, _} -> 
 			case make:all([load]) of
 				up_to_date ->
 					ok;
@@ -30,7 +30,17 @@ prepare(Req) ->
 	catch
 		_Error:_Reason -> 
 			fission:initialize(node()),
-			fission_syn:set(storage_node, node())
+			fission_syn:set(storage_node, node()),
+			case init:get_argument(devmode) of
+				{ok, _} ->
+					lists:foreach(fun({Key, Value}) -> 
+						fission_syn:set(Key, Value)
+					end, saloon_conf:initial_testing_data());
+				_ ->
+					lists:foreach(fun({Key, Value}) -> 
+							fission_syn:set(Key, Value)
+						end, saloon_conf:initial_data())
+			end
 	end,
 	UID = case saloon_util:ck(<<"auth">>, Req) of 
 		undefined -> 0;
