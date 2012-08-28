@@ -6,5 +6,5 @@
                              fission,cowboy]},
               {mod,{saloon_app,[]}},
               {env,[]},
-              {modules,[saloon_app,saloon_auth,saloon_ctx,saloon_init,
-                        saloon_sup,saloon_util]}]}.
+              {modules,[saloon_app,saloon_auth,saloon_ctx,saloon_http,
+                        saloon_init,saloon_sup,saloon_util]}]}.
