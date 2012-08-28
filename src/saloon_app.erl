@@ -21,7 +21,6 @@ start() ->
 	).
 
 start(_T, _A) ->
-	io:format("herpderp"),
 	cowboy:start_listener(saloon_listener, 200,
 		cowboy_tcp_transport, [{port, saloon_conf:port()}],
 		cowboy_http_protocol, [{dispatch, saloon_conf:dispatch()}]
