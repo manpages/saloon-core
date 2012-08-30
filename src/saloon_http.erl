@@ -1,9 +1,9 @@
 -module(saloon_http).
 
--export(
-	[return/2
-	]
-).
+-export([
+		 return/2
+	]).
+
 
 -include_lib("cowboy/include/http.hrl").
 
@@ -19,6 +19,6 @@ return(Reply, Req) ->
             {ok, RenderedRepReq} = 
                 cowboy_http_req:reply(
                     200, [], HTML, Req 
-                ),  
-        {ok, RenderedRepReq, return}
-    end.
+                ),
+			{ok, RenderedRepReq, return}
+		end.

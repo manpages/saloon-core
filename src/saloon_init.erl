@@ -11,7 +11,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 prepare(Req) ->
-	?debugFmt("~n~n~n~n=~p REQUEST===~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", [X || {X, _} <- [cowboy_http_req:method(Req), cowboy_http_req:raw_path(Req), cowboy_http_req:peer(Req), cowboy_http_req:body_qs(Req)]]),
+	?debugFmt("~n-REQUEST---- ~p ---~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", [X || {X, _} <- [cowboy_http_req:method(Req), cowboy_http_req:raw_path(Req), cowboy_http_req:peer(Req), cowboy_http_req:body_qs(Req)]]),
 	case init:get_argument(devmode) of
 		{ok, _} -> 
 			case make:all([load]) of
