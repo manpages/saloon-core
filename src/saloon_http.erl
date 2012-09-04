@@ -44,7 +44,7 @@ receive_file(Req@, State) ->
 					{ok, Uploader} = file_uploader:start(FilenameB,
 																ContentType),
 					receive_file(Req@, 
-							 State#state{ 
+							 State#upload_state{ 
 							   filename = Filename,
 							   content_type = ContentType,
 							   uploader = Uploader
@@ -52,21 +52,21 @@ receive_file(Req@, State) ->
 			end;
 		{{body, Data}, Req@} ->
 			if 
-				State#state.uploader /= undefined ->
-					file_uploader:write(State#state.uploader, Data),
-					receive_file(Req@, State#state{ size = size(Data) + State#state.size });
+				State#upload_state.uploader /= undefined ->
+					file_uploader:write(State#upload_state.uploader, Data),
+					receive_file(Req@, State#upload_state{ size = size(Data) + State#upload_state.size });
 				true ->
 					receive_file(Req@, State)
 			end;
 		{end_of_part, Req@} ->
 			if
-				State#state.uploader /= undefined ->
-					case file_uploader:done(State#state.uploader) of
+				State#upload_state.uploader /= undefined ->
+					case file_uploader:done(State#upload_state.uploader) of
 						{ok, URL, Location} ->
 							Files = [[
 									  {name, FilenameB},
-									  {url, URL}]|State#state.files],
-							receive_file(Req@, State#state{ filename = undefined,
+									  {url, URL}]|State#upload_state.files],
+							receive_file(Req@, State#upload_state{ filename = undefined,
 													content_type = undefined,
 													uploader = undefined,
 													size = 0,
@@ -82,8 +82,8 @@ receive_file(Req@, State) ->
 		{eof, Req@} ->
 			{ok, Req@} = cowboy_http_req:reply(200, 
 											   [{<<"Content-Type">>, <<"application/json">>}],
-											   jsx:to_json(State#state.files),
+											   jsx:to_json(State#upload_state.files),
 											   Req@),
-			{Req@, State#state{ files = [] }}
+			{Req@, State#upload_state{ files = [] }}
 	end.
 
