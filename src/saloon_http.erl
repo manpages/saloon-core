@@ -33,7 +33,7 @@ receive_file(Req@, State) ->
 		{error, badarg} ->
 			{ok, Req@} = cowboy_http_req:reply(500, Req@),
 			{Req@, State};
-		{{headers, Headers}, Req@} ->
+		{{headers, Headers}, _Req@} ->
 			Disp = cowboy_multipart:content_disposition(proplists:get_value(<<"Content-Disposition">>, Headers)),
 			case kvc:path('form-data'.filename, [Disp]) of
 				[] -> %% not a file
