@@ -11,7 +11,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 prepare(Req) ->
-	case cowboy_http_req:multipart_data(Req@) of                                                                                                                                          
+	case cowboy_http_req:multipart_data(Req) of 
 		{error, badarg} ->
 			?debugFmt("~n-REQUEST---- ~p ---~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", 
 				[X || {X, _} <- [
