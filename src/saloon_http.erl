@@ -13,14 +13,14 @@
 %%
 -spec return({ok, #http_req{}} | binary(), #http_req{}) -> {ok, #http_req{}, return}.
 return(Reply, Req) ->
-    case Reply of 
-        {ok, RepReq} ->
-            {ok, RepReq, return};
-        HTML ->
-            {ok, RenderedRepReq} = 
-                cowboy_http_req:reply(
-                    200, [], HTML, Req 
-                ),
+	case Reply of 
+		{ok, RepReq} ->
+			{ok, RepReq, return};
+		HTML ->
+			{ok, RenderedRepReq} = 
+				cowboy_http_req:reply(
+					200, [], HTML, Req 
+				),
 			{ok, RenderedRepReq, return}
 		end.
 
@@ -36,14 +36,14 @@ receive_file(Req@, State) ->
 			Disp = cowboy_multipart:content_disposition(proplists:get_value(<<"Content-Disposition">>, Headers)),
 			case kvc:path('form-data'.filename, [Disp]) of
 				[] -> %% not a file
-					recv(Req@, State);
+					receive_file(Req@, State);
 				FilenameB ->
 					ContentType = proplists:get_value('Content-Type', Headers,
 													  <<"application/octet-stream">>),
 					Filename = binary_to_list(FilenameB),
 					{ok, Uploader} = file_uploader:start(FilenameB,
 																ContentType),
-					recv(Req@, 
+					receive_file(Req@, 
 							 State#state{ 
 							   filename = Filename,
 							   content_type = ContentType,
@@ -54,9 +54,9 @@ receive_file(Req@, State) ->
 			if 
 				State#state.uploader /= undefined ->
 					file_uploader:write(State#state.uploader, Data),
-					recv(Req@, State#state{ size = size(Data) + State#state.size });
+					receive_file(Req@, State#state{ size = size(Data) + State#state.size });
 				true ->
-					recv(Req@, State)
+					receive_file(Req@, State)
 			end;
 		{end_of_part, Req@} ->
 			if
@@ -66,7 +66,7 @@ receive_file(Req@, State) ->
 							Files = [[
 									  {name, FilenameB},
 									  {url, URL}]|State#state.files],
-							recv(Req@, State#state{ filename = undefined,
+							receive_file(Req@, State#state{ filename = undefined,
 													content_type = undefined,
 													uploader = undefined,
 													size = 0,
@@ -77,7 +77,7 @@ receive_file(Req@, State) ->
 							{Req@, State}
 					end;
 				true ->
-					recv(Req@, State)
+					receive_file(Req@, State)
 			end;
 		{eof, Req@} ->
 			{ok, Req@} = cowboy_http_req:reply(200, 
