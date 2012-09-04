@@ -11,7 +11,22 @@
 -include_lib("eunit/include/eunit.hrl").
 
 prepare(Req) ->
-	?debugFmt("~n-REQUEST---- ~p ---~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", [X || {X, _} <- [cowboy_http_req:method(Req), cowboy_http_req:raw_path(Req), cowboy_http_req:peer(Req), cowboy_http_req:body_qs(Req)]]),
+	case cowboy_http_req:multipart_data(Req@) of                                                                                                                                          
+		{error, badarg} ->
+			?debugFmt("~n-REQUEST---- ~p ---~nPath: ~p~nPeer: ~p~nBody query string data:~p~n", 
+				[X || {X, _} <- [
+					 cowboy_http_req:method(Req)
+					,cowboy_http_req:raw_path(Req)
+					,cowboy_http_req:peer(Req)
+					,cowboy_http_req:body_qs(Req)]]
+			);
+		_ -> 
+			?debugFmt("~n-MULTIPART REQUEST----~nPath: ~p~nPeer: ~p~n", 
+				[X || {X, _} <- [
+					 cowboy_http_req:raw_path(Req)
+					,cowboy_http_req:peer(Req)]]
+			)
+	end,
 	case init:get_argument(devmode) of
 		{ok, _} -> 
 			case make:all([load]) of
