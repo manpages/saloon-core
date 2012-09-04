@@ -41,7 +41,9 @@ receive_file(Req@, State) ->
 			case kvc:path('form-data'.filename, [Disp]) of
 				[] -> %% not a file
 					?debugMsg("Not a file"),
-					receive_file(Req@, State);
+					?debugFmt("Dumping form-data: ~n~p~n", [kvc:path('form-data', [Disp])]),
+					{ok, Req@} = cowboy_http_req:reply(500, Req@),
+					{Req@, State};
 				FilenameB ->
 					?debugFmt("File ~p", [FilenameB]),
 					ContentType = proplists:get_value('Content-Type', Headers,
