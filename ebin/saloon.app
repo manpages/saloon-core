@@ -7,4 +7,4 @@
               {mod,{saloon_app,[]}},
               {env,[]},
               {modules,[saloon_app,saloon_auth,saloon_ctx,saloon_http,
-                        saloon_init,saloon_sup,saloon_util]}]}.
+                        saloon_init,saloon_sup,saloon_util,saloon_view]}]}.
