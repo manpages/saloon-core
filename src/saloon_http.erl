@@ -2,6 +2,7 @@
 
 -export([
 		 return/2
+		,receive_file/2
 	]).
 
 
@@ -41,8 +42,7 @@ receive_file(Req@, State) ->
 					ContentType = proplists:get_value('Content-Type', Headers,
 													  <<"application/octet-stream">>),
 					Filename = binary_to_list(FilenameB),
-					{ok, Uploader} = file_uploader:start(FilenameB,
-																ContentType),
+					{ok, Uploader} = saloon_uploader:start(FilenameB, ContentType),
 					receive_file(Req@, 
 							 State#upload_state{ 
 							   filename = Filename,
@@ -53,7 +53,7 @@ receive_file(Req@, State) ->
 		{{body, Data}, Req@} ->
 			if 
 				State#upload_state.uploader /= undefined ->
-					file_uploader:write(State#upload_state.uploader, Data),
+					saloon_uploader:write(State#upload_state.uploader, Data),
 					receive_file(Req@, State#upload_state{ size = size(Data) + State#upload_state.size });
 				true ->
 					receive_file(Req@, State)
@@ -61,10 +61,10 @@ receive_file(Req@, State) ->
 		{end_of_part, Req@} ->
 			if
 				State#upload_state.uploader /= undefined ->
-					case file_uploader:done(State#upload_state.uploader) of
+					case saloon_uploader:done(State#upload_state.uploader) of
 						{ok, URL, Location} ->
 							Files = [[
-									  {name, FilenameB},
+									  {name, State#upload_state.filename},
 									  {url, URL}]|State#upload_state.files],
 							receive_file(Req@, State#upload_state{ filename = undefined,
 													content_type = undefined,
