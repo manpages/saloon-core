@@ -1,4 +1,4 @@
--record(state, {
+-record(upload_state, {
 		 filename
 		,content_type
 		,uploader :: pid()
