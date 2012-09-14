@@ -73,7 +73,7 @@ receive_file(Req@, State) ->
 			if
 				State#upload_state.uploader /= undefined ->
 					case saloon_uploader:done(State#upload_state.uploader) of
-						{ok, URL, Location} ->
+						{ok, URL, _Location} ->
 							?debugFmt("Finalizing upload at ~p", [State#upload_state.uploader]),
 							Files = [[
 									  {name, State#upload_state.filename},
