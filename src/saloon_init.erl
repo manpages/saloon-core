@@ -61,8 +61,7 @@ print_request_info(Req) ->
 					 cowboy_http_req:raw_path(Req)
 					,cowboy_http_req:peer(Req)]]
 			)
-	end
-end.
+	end.
 
 print_user_info(UID, Lang) ->
 	?debugFmt("uid -> ~p; lang -> ~p~n", [UID, Lang]).
